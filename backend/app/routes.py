@@ -1,4 +1,5 @@
-from flask import Blueprint
+from flask import Blueprint,request,jsonify
+from app.scrapper import scrape
 
 bp = Blueprint("pages",__name__)
 
@@ -18,9 +19,12 @@ def login():
 def summarizer():
     return "summarization"
 
-@bp.route('/scrapper')
+@bp.route('/scrapper',methods=['POST'])
 def scrapper():
-    return "scrapper"
+    data = request.get_json()
+    url = data['url']
+    print(scrape(url))
+    return "scrapped"
 
 @bp.route('/sentiment')
 def sentiment():
