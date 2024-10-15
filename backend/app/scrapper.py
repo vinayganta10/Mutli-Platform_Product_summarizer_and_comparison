@@ -36,4 +36,31 @@ def scrape(url):
         for review in reviews:
             file.write(review.text.strip() + '\n')
     
+    soup = BeautifulSoup(response.content, 'lxml')
+    title = soup.find('span', {'id': 'productTitle'})
+    price = soup.find('span', {'class': 'a-price-whole'})
+    rating = soup.find('span', {'class': 'a-icon-alt'})
+    delivery = soup.find('div', {'id': 'deliveryBlockMessage'})
+    emi_details = soup.find('div', {'id': 'buyBackAccordionRow'}) 
+    warranty = soup.find('div', {'id': 'inemi_feature_div'})
+    
+    technical_details = {}
+    technical_table = soup.find('table', {'id': 'productDetails_techSpec_section_1'})
+    if technical_table:
+        rows = technical_table.find_all('tr')
+        for row in rows:
+            key = row.find('th').get_text(strip=True)
+            value = row.find('td').get_text(strip=True)
+            technical_details[key] = value
+
+    product_details = {
+        'title': title.get_text(strip=True) if title else 'N/A',
+        'price': price.get_text(strip=True) if price else 'N/A',
+        'rating': rating.get_text(strip=True) if rating else 'N/A',
+        'delivery_date': delivery.get_text(strip=True) if delivery else 'N/A',
+        'emi_details': emi_details.get_text(strip=True) if emi_details else 'N/A',
+        'warranty': warranty.get_text(strip=True) if warranty else 'N/A',
+        'technical_details': technical_details
+    }
+    print(product_details.get('warranty'))
     return len(reviews)
