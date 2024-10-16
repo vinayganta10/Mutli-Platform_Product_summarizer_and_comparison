@@ -23,7 +23,8 @@ def summarizer():
 def scrapper():
     data = request.get_json()
     url = data['url']
-    print(scrape(url))
+    if scrape(url)==-1:
+        raise Exception("Could not scrape")
     return "scrapped"
 
 @bp.route('/sentiment')
