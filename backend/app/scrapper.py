@@ -80,8 +80,6 @@ def scrape(url):
 
         driver.quit()
 
-        
-
     else:
         #jiomart
         pass
