@@ -1,7 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 from urllib.parse import urlparse
+import time
 import os
 import re
 import json
@@ -66,21 +69,30 @@ def scrape(url):
         }
 
     elif platform=='flipkart':
-        soup = BeautifulSoup(response.text, 'html.parser')
-    
-        reviews=soup.find('div',{'id': 'container'})
-        print(reviews)
+        service = Service('C:\webdrivers\chromedriver-win64\chromedriver-win64\chromedriver.exe')
+        driver = webdriver.Chrome(service=service)
+
+        driver.get(url=url)
+
+        time.sleep(5)
+
+        reviews = driver.find_elements(By.CLASS_NAME, 'ZmyHeo')
+
+        driver.quit()
+
+        
 
     else:
         #jiomart
         pass
-    # if not os.path.exists(directory):
-    #     os.makedirs(directory)
+    
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
-    # file_path = os.path.join(directory, 'reviews.txt')
-    # with open(file_path, 'a',encoding='utf-8') as file:
-    #     for review in reviews:
-    #         file.write(review.text.strip() + '\n')
+    file_path = os.path.join(directory, 'reviews.txt')
+    with open(file_path, 'a',encoding='utf-8') as file:
+        for review in reviews:
+            file.write(review.text.strip() + '\n')
 
     # file_path = os.path.join(directory, 'data.json')
     # with open(file_path, 'w') as json_file:
