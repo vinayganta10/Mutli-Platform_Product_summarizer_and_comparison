@@ -1,5 +1,6 @@
 from flask import Blueprint,request,jsonify
 from app.scrapper import scrape
+from backend.app.summarize import summarize_reviews_in_chunks
 
 bp = Blueprint("pages",__name__)
 
@@ -17,7 +18,8 @@ def login():
 
 @bp.route('/summarizer')
 def summarizer():
-    return "summarization"
+    summarize_reviews_in_chunks()
+    
 
 @bp.route('/scrapper',methods=['POST'])
 def scrapper():
