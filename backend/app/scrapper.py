@@ -78,7 +78,6 @@ def scrape(url):
 
         reviews = driver.find_elements(By.CLASS_NAME, 'ZmyHeo')
 
-        driver.quit()
 
     else:
         #jiomart

@@ -1,9 +1,8 @@
 from transformers import pipeline
 import os
 
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
-
 def summarize_reviews_in_chunks(file_path, max_length=150, min_length=50, chunk_size=500):
+    summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
     with open(file_path, 'r') as file:
         reviews = file.readlines()
 
@@ -26,13 +25,12 @@ def summarize_reviews_in_chunks(file_path, max_length=150, min_length=50, chunk_
 
     return structured_summary
 
-directory='temp_files'
+# directory='temp_files'
 
-if not os.path.exists(directory):
-    os.makedirs(directory)
+# if not os.path.exists(directory):
+#     os.makedirs(directory)
 
-file_path = 'temp_files/reviews.txt'
+# file_path = 'temp_files/reviews.txt'
 
-# Get the overall structured summary of the reviews from the file, adjusting chunk_size as needed
-overall_summary = summarize_reviews_in_chunks(file_path, max_length=150, min_length=50, chunk_size=500)
-print("Overall Review Summary:\n", overall_summary)
+# overall_summary = summarize_reviews_in_chunks(file_path, max_length=150, min_length=50, chunk_size=500)
+# print("Overall Review Summary:\n", overall_summary)
