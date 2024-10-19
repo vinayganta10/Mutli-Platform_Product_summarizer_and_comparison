@@ -3,7 +3,7 @@ import os
 
 def summarize_reviews_in_chunks(file_path, max_length=150, min_length=50, chunk_size=500):
     summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r',encoding='utf-8') as file:
         reviews = file.readlines()
 
     reviews_text = " ".join([review.strip() for review in reviews])
