@@ -5,7 +5,7 @@ const Project = () => {
   return (
     <div>
       <div>{<Navbar />}</div>
-      <h1>Project</h1>
+      <h1>ProjectK</h1>
     </div>
   );
 };

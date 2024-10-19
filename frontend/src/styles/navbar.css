@@ -24,6 +24,12 @@
     gap: 20px;
 }
 
+.nav-left a {
+    text-decoration: none;
+    color: inherit;
+    cursor: default;
+}
+
 .nav-right li a {
     color: #fff;
     text-decoration: none;
