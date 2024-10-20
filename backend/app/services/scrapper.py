@@ -39,7 +39,7 @@ def scrape(url):
     }
 
     response = requests.get(url, headers=headers)
-    soup = BeautifulSoup(response.content, 'html.parser')
+    soup = BeautifulSoup(response.text, 'html.parser')
     
     if platform=='amazon':
         reviews = soup.find_all('span', {'data-hook': 'review-body'})
@@ -49,7 +49,7 @@ def scrape(url):
         delivery = soup.find('div', {'id': 'deliveryBlockMessage'})
         emi_details = soup.find('span',{'class':'a-hidden'})
         warranty = soup.find_all('span', {'class': 'a-size-small a-color-link a-text-normal'})
-        
+
         technical_details = {}
         technical_table = soup.find('table', {'id': 'productDetails_techSpec_section_1'})
         if technical_table:
@@ -66,7 +66,8 @@ def scrape(url):
             'delivery_date': clean_text(delivery.get_text(strip=True)) if delivery else 'N/A',
             'emi_details': clean_text(emi_details.get_text(strip=True)) if emi_details else 'N/A',
             'warranty': clean_text(warranty[2].get_text(strip=True)) if warranty else 'N/A',
-            'technical_details': technical_details
+            'technical_details': technical_details,
+            'platform':platform
         }
 
     elif platform=='flipkart':
@@ -102,37 +103,42 @@ def scrape(url):
             'delivery_date': clean_text(delivery.text.strip()) if delivery else 'N/A',
             'emi_details': clean_text(emi_details.text.strip()) if emi_details else 'N/A',
             'warranty': clean_text(warranty.text.strip()) if warranty else 'N/A',
+            'platform':platform
             #'technical_details': technical_details
         }
 
     else:
-        service = Service('C:\webdrivers\chromedriver-win64\chromedriver-win64\chromedriver.exe')
-        driver = webdriver.Chrome(service=service)
+        # service = Service('C:\webdrivers\chromedriver-win64\chromedriver-win64\chromedriver.exe')
+        # driver = webdriver.Chrome(service=service)
 
-        driver.get(url=url)
+        # driver.get(url=url)
 
-        time.sleep(5)
+        # time.sleep(5)
 
-        title = driver.find_element(By.ID,'pdp_product_name')
-        priceText = driver.find_element(By.ID,'price_section').text.strip()
-        prices = priceText.split('\n')
-        price = prices[0]
-        warranty = driver.find_element(By.CSS_SELECTOR,'.jm-pv-m.jm-heading-xxs.border-default')
-        print(warranty)
-        reviews = driver.find_elements(By.ID,'content')
+        # title = driver.find_element(By.ID,'pdp_product_name')
+        # priceText = driver.find_element(By.ID,'price_section').text.strip()
+        # prices = priceText.split('\n')
+        # price = prices[0]
+        # warranty = driver.find_element(By.CSS_SELECTOR,'.jm-pv-m.jm-heading-xxs.border-default')
+        # print(warranty)
+        # reviews = driver.find_elements(By.ID,'content')
+        pass
 
     
-    # if not os.path.exists(directory):
-    #     os.makedirs(directory)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
-    # file_path = os.path.join(directory, 'reviews.txt')
-    # with open(file_path, 'a',encoding='utf-8') as file:
-    #     for review in reviews:
-    #         file.write(review.text.strip() + '\n')
+    file_path = os.path.join(directory, 'reviews.txt')
+    with open(file_path, 'w',encoding='utf-8') as file:
+        for review in reviews:
+            cleaned_review = review.text.strip()
+            if cleaned_review.endswith('Read More'):
+                cleaned_review = cleaned_review[:-len('Read More')].strip()
+            file.write(cleaned_review + '\n')
 
-    # file_path = os.path.join(directory, 'data.json')
-    # with open(file_path, 'w') as json_file:
-    #     json.dump(product_details, json_file, indent=4)
+    file_path = os.path.join(directory, 'data.json')
+    with open(file_path, 'w') as json_file:
+        json.dump(product_details, json_file, indent=4)
 
-    # return len(reviews)
-    return 0
+    return len(reviews)
+    #return 0

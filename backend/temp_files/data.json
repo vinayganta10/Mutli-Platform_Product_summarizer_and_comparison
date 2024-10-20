@@ -1,8 +1,31 @@
 {
-    "title": "Apple iPhone 15 (Green, 128 GB)",
-    "price": "62,999",
-    "rating": "4.6",
-    "delivery_date": "Delivery by21 Oct, Monday|Free40?",
-    "emi_details": "EMI starting from 2,215/month",
-    "warranty": "1 year warranty for phone and 1 year warranty for in Box Accessories.Know More"
+    "title": "Samsung Galaxy S24 Ultra 5G AI Smartphone (Titanium Gray, 12GB, 256GB Storage)",
+    "price": "1,21,999.",
+    "rating": "4.2 out of 5 stars",
+    "delivery_date": "FREE deliveryThursday, 24 October.DetailsOr fastest deliveryTomorrow, 21 October. Order within8 hrs 39 mins.Details",
+    "emi_details": "EMIstarts at 5,083 per month.",
+    "warranty": "1 Year Warranty",
+    "technical_details": {
+        "OS": "Android 14",
+        "Product Dimensions": "0.9 x 7.9 x 16.2 cm; 232 g",
+        "Batteries": "1 Lithium Ion batteries required. (included)",
+        "Item model number": "S928BZ",
+        "Wireless communication technologies": "Cellular",
+        "Connectivity technologies": "Bluetooth, Wi-Fi, USB, NFC",
+        "GPS": "True",
+        "Special features": "Fast Charging Support, Dual SIM, Always On Display, Built-In GPS, Mobile Hotspot Capability",
+        "Other display features": "Wireless",
+        "Device interface - primary": "Touchscreen with Stylus Support",
+        "Resolution": "QHD+ 3120 x 1440",
+        "Other camera features": "Rear, Front",
+        "Audio Jack": "USB Type C",
+        "Form factor": "Bar",
+        "Colour": "grey",
+        "Battery Power Rating": "5000",
+        "Whats in the box": "User Manual, SIM Ejector Pin, Stylus Pen, Smartphone, Data Cable (Type C-to-C)",
+        "Manufacturer": "Samsung India Electronics Pvt.",
+        "Country of Origin": "India",
+        "Item Weight": "232 g"
+    },
+    "platform": "amazon"
 }

@@ -5,7 +5,6 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
   const location = useLocation();
-  console.log(location);
   return (
     <div className="navbar">
       <ul className="navbar-list">
