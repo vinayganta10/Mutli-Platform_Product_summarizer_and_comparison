@@ -1,14 +1,17 @@
 from functools import wraps
 from flask import request, jsonify, g
 import jwt
+from dotenv import load_dotenv
+import os
 
-SECRET_KEY = 'secret_key'
+load_dotenv()
+SECRET_KEY = os.getenv('secret_key')
 
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
-
+        
         if 'Authorization' in request.headers:
             token = request.headers['Authorization'].split(" ")[1]
 
@@ -18,6 +21,7 @@ def token_required(f):
         try:
             data = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
             g.current_user = data['email']
+            
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired!'}), 401
         except jwt.InvalidTokenError:

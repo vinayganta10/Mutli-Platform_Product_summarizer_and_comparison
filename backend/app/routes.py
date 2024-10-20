@@ -6,6 +6,7 @@ import os
 from .auth.login import Login
 from .auth.signup import Signup
 from app.models import User
+from .auth.update import Update
 from .auth.verify import token_required
 
 bp = Blueprint("pages",__name__)
@@ -25,10 +26,11 @@ def login():
     data = request.get_json()
     return Login(data)
 
-@bp.route('/profile',methods=['GET','POST'])
+@bp.route('/profile',methods=['PUT'])
 @token_required
 def update_profile():
-    pass
+    data = request.get_json()
+    return Update(data)
 
 @bp.route('/summarizer',methods=['GET'])
 @token_required

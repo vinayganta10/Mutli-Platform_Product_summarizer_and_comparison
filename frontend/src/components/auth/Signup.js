@@ -1,6 +1,8 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import Navbar from "../Navbar";
-import {axios} from 'axios';
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   TextField,
   Button,
@@ -10,9 +12,10 @@ import {
   Avatar,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -24,9 +27,24 @@ const Signup = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data: ", formData);
+    let response = await axios.post("http://localhost:5000/signup", formData);
+    if (response.status === 200) {
+      toast.success("Account created successfully", {
+        autoClose: 3000,
+      });
+    } else {
+      toast.error("Error creating account. Try again");
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+      });
+    }
+    setTimeout(()=>{
+      navigate('/login');
+    },3000);
   };
 
   return (
@@ -96,9 +114,20 @@ const Signup = () => {
             >
               Sign Up
             </Button>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2 }}>
+              <Typography  variant="body2" sx={{ mr: 1 }}>Already have an account?</Typography>
+              <Button
+                variant="text"
+                sx={{ ml: 1 }}
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </Button>
+            </Box>
           </Box>
         </Box>
       </Container>
+      <ToastContainer />
     </div>
   );
 };
