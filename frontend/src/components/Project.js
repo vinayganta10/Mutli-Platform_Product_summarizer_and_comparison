@@ -13,19 +13,45 @@ import Paper from "@mui/material/Paper";
 const Project = () => {
   const [url, setUrl] = useState();
   const [data, setData] = useState();
+  const [summary, setSummary] = useState("");
   const [showDetails, setShowDetails] = useState(true);
+  const token = localStorage.getItem("token");
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(token);
+
     try {
-      const response = await axios.post("http://localhost:5000/scrapper", {
-        url: url,
-      });
+      const response = await axios.post(
+        "http://localhost:5000/scrapper",
+        {
+          url: url,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const resData = response.data;
       setData(resData);
       console.log("Response from backend:", resData);
     } catch (error) {
       console.error("Error:", error);
+    }
+  };
+  const handleSummarize = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.get("http://localhost:5000/summarizer", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response.data.summary);
+      setSummary(response.data.summary);
+    } catch (error) {
+      console.error("Error fetching summary:", error);
     }
   };
   return (
@@ -36,6 +62,18 @@ const Project = () => {
           <Typography variant="h4" component="h1" gutterBottom>
             Enter Product URL
           </Typography>
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ mt: 2 }}
+            onClick={() => {
+              setUrl("");
+              setData(null);
+              setSummary(null);
+            }}
+          >
+            Check Another Product
+          </Button>
           <form onSubmit={handleSubmit}>
             <TextField
               label="Enter Amazon/Flipkart URL"
@@ -171,7 +209,30 @@ const Project = () => {
       )}
       {data && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-          <Button variant="contained">Summarize</Button>
+          <Button variant="contained" onClick={handleSummarize}>
+            Summarize
+          </Button>
+        </Box>
+      )}
+      {summary && (
+        <Box
+          mt={4}
+          p={2}
+          sx={{
+            margin: "10px auto",
+            backgroundColor: "#f0f0f0",
+            borderRadius: "8px",
+            width: "80%",
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{ display: "flex", justifyContent: "center" }}
+            gutterBottom
+          >
+            Summary:
+          </Typography>
+          <Typography>{summary}</Typography>
         </Box>
       )}
     </div>

@@ -36,9 +36,9 @@ def update_profile():
 @token_required
 def summarizer():
     file_path = 'temp_files/reviews.txt'
-    print(summarize_reviews_in_chunks(file_path=file_path))
-    return "summarized"
-    
+    summary = summarize_reviews_in_chunks(file_path=file_path)
+    return jsonify({"summary":summary}),200
+
 @bp.route('/scrapper',methods=['POST'])
 @token_required
 def scrapper():

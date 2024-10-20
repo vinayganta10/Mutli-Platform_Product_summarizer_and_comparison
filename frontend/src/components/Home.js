@@ -86,7 +86,7 @@ const Home = () => {
             &copy; {new Date().getFullYear()} Summarizer and Analyzer
           </Typography>
           <IconButton
-            href="https://github.com/your_github_profile"
+            href="https://github.com/vinayganta10/Mutli-Platform_Product_summarizer_and_comparison"
             sx={{ color: 'white', mt: 1 }}
           >
             <GitHubIcon />
