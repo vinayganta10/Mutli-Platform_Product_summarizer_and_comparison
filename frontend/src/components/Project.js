@@ -12,6 +12,7 @@ import Paper from "@mui/material/Paper";
 
 const Project = () => {
   const [url, setUrl] = useState();
+  const [imgs, setImgs] = useState("");
   const [data, setData] = useState();
   const [summary, setSummary] = useState("");
   const [showDetails, setShowDetails] = useState(true);
@@ -35,6 +36,7 @@ const Project = () => {
 
       const resData = response.data;
       setData(resData);
+      setImgs(resData.url);
       console.log("Response from backend:", resData);
     } catch (error) {
       console.error("Error:", error);
@@ -100,6 +102,11 @@ const Project = () => {
               alignItems: "center",
             }}
           >
+            <img
+              src={imgs}
+              alt="product image"
+              loading="lazy"
+            />
             <Button
               variant={showDetails ? "contained" : "outlined"}
               onClick={() => setShowDetails(true)}

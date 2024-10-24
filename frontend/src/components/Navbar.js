@@ -32,7 +32,7 @@ const Navbar = () => {
             </div>
           )}
         {token &&
-          (location.pathname === "/home" ||
+          (location.pathname === "/" || location.pathname === "/home" ||
             location.pathname === "/profile" ||
             location.pathname === "/project") && (
             <div className="nav-right">

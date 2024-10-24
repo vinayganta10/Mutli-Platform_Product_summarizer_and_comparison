@@ -5,7 +5,7 @@ from .mongoDB import MongoDB
 
 def create_app():
     app = Flask(__name__)
-    
+    CORS(app)
     mongodb = MongoDB("mongodb+srv://aggvinayganta10:Vinay%40123@cluster1.j0j9p.mongodb.net/", "SAA")
 
     @app.before_request
@@ -17,7 +17,6 @@ def create_app():
     # def teardown_db(exception):
     #     mongodb.close()
         
-    CORS(app)
 
     app.register_blueprint(routes.bp)
     

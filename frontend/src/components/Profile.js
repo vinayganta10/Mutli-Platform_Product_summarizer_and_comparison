@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Avatar,
   TextField,
@@ -8,20 +8,46 @@ import {
   Container,
   IconButton,
 } from "@mui/material";
+import {ToastContainer,toast} from "react-toastify";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import Navbar from "./Navbar.js";
+import axios from "axios";
 
 const Profile = () => {
-  const [profileData, setProfileData] = useState({
-    username: "",
-    email: "",
-    profilePhoto: "",
-  });
+  const email = localStorage.getItem("email");
+  const[user,setUser] = useState("");
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.post('http://localhost:5000/getProfile', {
+          email: email
+        });
+        setUser(response.data.username);
+      } catch (error) {
+        console.error('Error fetching the profile:', error);
+      }
+    };
+    fetchUser();
+  },[]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setProfileData({ ...profileData, [name]: value });
-  };
+  async function clickSave(){
+    try {
+      await axios.put('http://localhost:5000/profile', {
+        username:user,
+        email: email
+      });
+      toast.success("Updated successfully",{autoClose:3000});
+    } catch (error) {
+      toast.error("Error updating profile",{autoClose:3000});
+      console.error('Error fetching the profile:', error);
+    }
+  }
+
+  const [profileData, setProfileData] = useState({
+    "username": "",
+    "email": "",
+    "profilePhoto": "",
+  });
 
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0];
@@ -51,7 +77,6 @@ const Profile = () => {
             src={profileData.profilePhoto}
             sx={{ width: 100, height: 100, mb: 2 }}
           >
-            {/* Default Avatar */}
             {profileData.profilePhoto ? null : "U"}
           </Avatar>
 
@@ -82,8 +107,8 @@ const Profile = () => {
               label="Username"
               name="username"
               autoComplete="username"
-              value={profileData.username}
-              onChange={handleInputChange}
+              onChange={(e)=>setUser(e.target.value)}
+              value={user}
             />
             <TextField
               margin="normal"
@@ -91,15 +116,16 @@ const Profile = () => {
               id="email"
               label="Email"
               name="email"
-              value={profileData.email}
+              value={email}
               disabled
             />
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }}>
+            <Button onClick={clickSave} fullWidth variant="contained" sx={{ mt: 2 }}>
               Save Profile
             </Button>
           </Box>
         </Box>
       </Container>
+      <ToastContainer/>
     </div>
   );
 };

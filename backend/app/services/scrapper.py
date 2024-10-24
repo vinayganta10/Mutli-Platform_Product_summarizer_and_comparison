@@ -3,6 +3,9 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 from urllib.parse import urlparse
 import time
 import os
@@ -10,6 +13,12 @@ import re
 import json
 
 #url = 'https://www.amazon.in/OnePlus-Buds-Pro-Bluetooth-Ear/dp/B0DBHX75C4/ref=sr_1_1_sspa?crid=1EDEST4ZCNORE&dib=eyJ2IjoiMSJ9.jXIz5nn_0AnFAx-Y3XqNUDcevwiQNObcs1Un2Z5r_K2juLbrAP45718oCbcY_Zyi8Hwn_1avvlcpW672BWUqshmuR-dZ6_Os365DdZhlCB1rL87dJ193ytCO-6U3TUWG3tJBd_c84_UbOegMdMygXz48ho0YySXuPmfV84ojpLcY4pmjQTy9Mr5xKYGHxD4MHOIUGMI7UadPRTCk09t3xRWjZuAfLqBAYY23IdtyrPE.d6xG3j5S9SaCEANbR1guOJvm0fQGt0RW9c1bLjvfScc&dib_tag=se&keywords=oneplus%2Bearbuds&nsdOptOutParam=true&qid=1728567823&sprefix=one%2Caps%2C204&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1'
+
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--window-size=1920x1080")
 
 def clean_text(text):
     cleaned_text= re.sub(r'[\u200e\u200f\u20b9]', '', text).strip()
@@ -49,6 +58,9 @@ def scrape(url):
         delivery = soup.find('div', {'id': 'deliveryBlockMessage'})
         emi_details = soup.find('span',{'class':'a-hidden'})
         warranty = soup.find_all('span', {'class': 'a-size-small a-color-link a-text-normal'})
+        img = soup.find('img',{'id':'landingImage'})
+        imgUrl = img.get('src')
+        print(imgUrl)
 
         technical_details = {}
         technical_table = soup.find('table', {'id': 'productDetails_techSpec_section_1'})
@@ -67,12 +79,13 @@ def scrape(url):
             'emi_details': clean_text(emi_details.get_text(strip=True)) if emi_details else 'N/A',
             'warranty': clean_text(warranty[2].get_text(strip=True)) if warranty else 'N/A',
             'technical_details': technical_details,
+            'url':imgUrl,
             'platform':platform
         }
 
     elif platform=='flipkart':
         service = Service('C:\webdrivers\chromedriver-win64\chromedriver-win64\chromedriver.exe')
-        driver = webdriver.Chrome(service=service)
+        driver = webdriver.Chrome(service=service,options=chrome_options)
 
         driver.get(url=url)
 
@@ -85,6 +98,9 @@ def scrape(url):
         emi_details = driver.find_element(By.CLASS_NAME,'g11wDd')
         delivery = driver.find_element(By.CLASS_NAME,'hVvnXm')
         warranty = driver.find_element(By.CLASS_NAME,'nX0P-8')
+        img = driver.find_element(By.CLASS_NAME,'DByuf4.IZexXJ.jLEJ7H')
+        imgUrl = img.get_attribute('src')
+        print(imgUrl)
 
         # technical_details = {}
 
@@ -103,38 +119,65 @@ def scrape(url):
             'delivery_date': clean_text(delivery.text.strip()) if delivery else 'N/A',
             'emi_details': clean_text(emi_details.text.strip()) if emi_details else 'N/A',
             'warranty': clean_text(warranty.text.strip()) if warranty else 'N/A',
-            'platform':platform
+            'platform':platform,
+            'url':imgUrl
             #'technical_details': technical_details
         }
 
     else:
-        # service = Service('C:\webdrivers\chromedriver-win64\chromedriver-win64\chromedriver.exe')
-        # driver = webdriver.Chrome(service=service)
+        service = Service('C:\webdrivers\chromedriver-win64\chromedriver-win64\chromedriver.exe')
+        driver = webdriver.Chrome(service=service,options=chrome_options)
 
-        # driver.get(url=url)
+        driver.get(url=url)
 
-        # time.sleep(5)
+        time.sleep(5)
 
-        # title = driver.find_element(By.ID,'pdp_product_name')
-        # priceText = driver.find_element(By.ID,'price_section').text.strip()
-        # prices = priceText.split('\n')
-        # price = prices[0]
-        # warranty = driver.find_element(By.CSS_SELECTOR,'.jm-pv-m.jm-heading-xxs.border-default')
-        # print(warranty)
-        # reviews = driver.find_elements(By.ID,'content')
-        pass
+        title = driver.find_element(By.ID,'pdp_product_name').text.strip()
+        priceText = driver.find_element(By.ID,'price_section').text.strip()
+        prices = priceText.split('\n')
+        price = prices[0]
+        rating= driver.find_element(By.ID, "average").text.strip()
+        warranty = 'N/A'
+        warranty = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//div[contains(text(), 'Warranty')]"))
+        ).text.strip()
+        delivery = 'N/A'
+        delivery = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'product-delivery-to-between')]"))
+        ).text.strip()
+        emi_details='N/A'
+        review_containers = driver.find_elements(By.CLASS_NAME, 'feedback-service-review-container')
+        reviews = []
+        for container in review_containers:
+            review = container.find_element(By.CLASS_NAME, 'feedback-service-content').text
+            reviews.append(review)
 
-    
+        product_details = {
+            'title': clean_text(title) if title else 'N/A',
+            'price': clean_text(price) if price else 'N/A',
+            'rating': clean_text(rating) if rating else 'N/A',
+            'delivery_date': clean_text(delivery) if delivery else 'N/A',
+            'emi_details': clean_text(emi_details),
+            'warranty': clean_text(warranty) if warranty else 'N/A',
+            'platform' : platform
+            #'technical_details': technical_details
+        }
+
     if not os.path.exists(directory):
         os.makedirs(directory)
 
     file_path = os.path.join(directory, 'reviews.txt')
     with open(file_path, 'w',encoding='utf-8') as file:
-        for review in reviews:
-            cleaned_review = review.text.strip()
-            if cleaned_review.endswith('Read More'):
-                cleaned_review = cleaned_review[:-len('Read More')].strip()
-            file.write(cleaned_review + '\n')
+        if platform == 'amazon' or platform == 'flipkart':
+            for review in reviews:
+                cleaned_review = review.text.strip()
+                if cleaned_review.endswith('Read More'):
+                    cleaned_review = cleaned_review[:-len('Read More')].strip()
+                file.write(cleaned_review + '\n')
+        else:
+            for review in reviews:
+                file.write(review + '\n')
+        
 
     file_path = os.path.join(directory, 'data.json')
     with open(file_path, 'w') as json_file:

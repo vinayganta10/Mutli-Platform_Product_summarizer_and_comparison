@@ -6,6 +6,7 @@ import os
 from .auth.login import Login
 from .auth.signup import Signup
 from app.models import User
+from app.auth.profile import Profile
 from .auth.update import Update
 from .auth.verify import token_required
 
@@ -27,10 +28,14 @@ def login():
     return Login(data)
 
 @bp.route('/profile',methods=['PUT'])
-@token_required
 def update_profile():
     data = request.get_json()
     return Update(data)
+
+@bp.route('/getProfile',methods=['POST'])
+def get_profile():
+    data=request.get_json()
+    return Profile(data)
 
 @bp.route('/summarizer',methods=['GET'])
 @token_required
@@ -51,6 +56,7 @@ def scrapper():
         scraped_data = json.load(file)
     
     return scraped_data
+    #return "scrapped"
 
 @bp.route('/sentiment')
 def sentiment():
