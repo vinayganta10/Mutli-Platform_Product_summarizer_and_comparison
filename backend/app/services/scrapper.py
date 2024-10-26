@@ -60,7 +60,14 @@ def scrape(url):
         warranty = soup.find_all('span', {'class': 'a-size-small a-color-link a-text-normal'})
         img = soup.find('img',{'id':'landingImage'})
         imgUrl = img.get('src')
-        print(imgUrl)
+        keywordsDiv = soup.find('div',{'class': 'a-section a-spacing-small a-spacing-top-small _cr-product-insights_style_aspect-symbol-list__24amT'})
+        keywordsA = keywordsDiv.find_all('a')
+        keywords = []
+        for keyword in keywordsA:
+            element = keyword.get('aria-label')
+            element = element.replace("aspect","")
+            keywords.append(element)
+        print(keywords)
 
         technical_details = {}
         technical_table = soup.find('table', {'id': 'productDetails_techSpec_section_1'})
@@ -80,7 +87,8 @@ def scrape(url):
             'warranty': clean_text(warranty[2].get_text(strip=True)) if warranty else 'N/A',
             'technical_details': technical_details,
             'url':imgUrl,
-            'platform':platform
+            'platform':platform,
+            'keywords': keywords
         }
 
     elif platform=='flipkart':
@@ -100,7 +108,11 @@ def scrape(url):
         warranty = driver.find_element(By.CLASS_NAME,'nX0P-8')
         img = driver.find_element(By.CLASS_NAME,'DByuf4.IZexXJ.jLEJ7H')
         imgUrl = img.get_attribute('src')
-        print(imgUrl)
+        keywordsDiv = driver.find_elements(By.CLASS_NAME,'_5nb2hu')
+        keywords=[]
+        for keyword in keywordsDiv:
+            sentiment = "postive" if float(keyword.find_element(By.CLASS_NAME,'tobygM').text.strip())>=4 else "negative"
+            keywords.append(keyword.find_element(By.CLASS_NAME,'NTiEl0').text.strip()+" "+sentiment)
 
         # technical_details = {}
 
@@ -120,7 +132,8 @@ def scrape(url):
             'emi_details': clean_text(emi_details.text.strip()) if emi_details else 'N/A',
             'warranty': clean_text(warranty.text.strip()) if warranty else 'N/A',
             'platform':platform,
-            'url':imgUrl
+            'url':imgUrl,
+            'keywords':keywords,
             #'technical_details': technical_details
         }
 

@@ -9,6 +9,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 
 const Project = () => {
   const [url, setUrl] = useState();
@@ -16,6 +20,7 @@ const Project = () => {
   const [data, setData] = useState();
   const [summary, setSummary] = useState("");
   const [showDetails, setShowDetails] = useState(true);
+  const [keywords, setKeywords] = useState([]);
   const token = localStorage.getItem("token");
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,11 +55,29 @@ const Project = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data.summary);
       setSummary(response.data.summary);
+      const keywords = await axios.post(
+        "http://localhost:5000/sentiment",
+        {
+          url: url,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setKeywords(keywords.data);
     } catch (error) {
       console.error("Error fetching summary:", error);
     }
+  };
+  const getIcon = (feedbackType) => {
+    if (feedbackType === "POSITIVE")
+      return <CheckCircleIcon style={{ color: "green" }} />;
+    if (feedbackType === "NEGATIVE")
+      return <CancelIcon style={{ color: "red" }} />;
+    return <RemoveCircleIcon style={{ color: "orange" }} />;
   };
   return (
     <div>
@@ -102,11 +125,7 @@ const Project = () => {
               alignItems: "center",
             }}
           >
-            <img
-              src={imgs}
-              alt="product image"
-              loading="lazy"
-            />
+            <img src={imgs} alt="product image" loading="lazy" />
             <Button
               variant={showDetails ? "contained" : "outlined"}
               onClick={() => setShowDetails(true)}
@@ -240,6 +259,53 @@ const Project = () => {
             Summary:
           </Typography>
           <Typography>{summary}</Typography>
+        </Box>
+      )}
+      {keywords && (
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          mt={4}
+          margin="50px"
+        >
+          <Typography variant="h5" gutterBottom>
+            Most Used Keywords
+          </Typography>
+
+          <Box
+            display="flex"
+            flexWrap="wrap"
+            justifyContent="center"
+            gap={2} 
+            maxWidth="80%"
+          >
+            {keywords.map((item, index) => {
+              const [feedbackType, feedbackText] = item.split("  ");
+
+              return (
+                <Paper
+                  key={index}
+                  elevation={3}
+                  sx={{
+                    padding: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    minWidth: 200,
+                    transition: "transform 0.2s, box-shadow 0.2s",
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                      boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.3)",
+                    },
+                  }}
+                >
+                  <ListItemIcon>{getIcon(feedbackType)}</ListItemIcon>
+                  <ListItemText primary={feedbackText} />
+                </Paper>
+              );
+            })}
+          </Box>
         </Box>
       )}
     </div>

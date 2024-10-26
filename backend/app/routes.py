@@ -1,5 +1,6 @@
 from flask import Blueprint,request,jsonify,g
 from .services.scrapper import scrape
+from .services.sentiment import analyze
 from .services.summarize import summarize_reviews_in_chunks
 import json
 import os
@@ -38,14 +39,14 @@ def get_profile():
     return Profile(data)
 
 @bp.route('/summarizer',methods=['GET'])
-@token_required
+#@token_required
 def summarizer():
     file_path = 'temp_files/reviews.txt'
     summary = summarize_reviews_in_chunks(file_path=file_path)
     return jsonify({"summary":summary}),200
 
 @bp.route('/scrapper',methods=['POST'])
-@token_required
+#@token_required
 def scrapper():
     data = request.get_json()
     url = data['url']
@@ -58,11 +59,15 @@ def scrapper():
     return scraped_data
     #return "scrapped"
 
-@bp.route('/sentiment')
+@bp.route('/sentiment',methods=['POST'])
+#@token_required
 def sentiment():
-    return "sentiment"
+    data = request.get_json()
+    url = data['url']
+    return jsonify(analyze(url))
 
 @bp.route('/comparison')
+#@token_required
 def comparison():
     return "comparison"
 

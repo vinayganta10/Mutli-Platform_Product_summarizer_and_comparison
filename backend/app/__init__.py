@@ -1,4 +1,4 @@
-from flask import Flask,g
+from flask import Flask,g,jsonify
 from app import routes
 from flask_cors import CORS
 from .mongoDB import MongoDB
@@ -20,4 +20,12 @@ def create_app():
 
     app.register_blueprint(routes.bp)
     
+    @app.errorhandler(404)
+    def not_found_error(error):
+        return jsonify({"error": "Resource not found"}), 404
+
+    @app.errorhandler(500)
+    def internal_error(error):
+        return jsonify({"error": "Internal server error"}), 500
+
     return app
