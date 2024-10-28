@@ -1,7 +1,17 @@
 import React, { useState } from "react";
 import Navbar from "./Navbar.js";
 import axios from "axios";
-import { TextField, Button, Container, Typography, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -9,7 +19,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { ListItemIcon, ListItemText } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
@@ -20,7 +30,12 @@ const Project = () => {
   const [data, setData] = useState();
   const [summary, setSummary] = useState("");
   const [showDetails, setShowDetails] = useState(true);
-  const [keywords, setKeywords] = useState([]);
+  const [keywords, setKeywords] = useState(null);
+  const [compare, setCompare] = useState(null);
+  const [platform, setPlatform] = useState(null);
+  const [name, setName] = useState(null);
+  const [selectedComparePlatform, setSelectedComparePlatform] = useState("");
+
   const token = localStorage.getItem("token");
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,6 +57,8 @@ const Project = () => {
       const resData = response.data;
       setData(resData);
       setImgs(resData.url);
+      setPlatform(resData.platform);
+      setName(resData.name);
       console.log("Response from backend:", resData);
     } catch (error) {
       console.error("Error:", error);
@@ -72,6 +89,8 @@ const Project = () => {
       console.error("Error fetching summary:", error);
     }
   };
+
+  const handleCompare = async () => {};
   const getIcon = (feedbackType) => {
     if (feedbackType === "POSITIVE")
       return <CheckCircleIcon style={{ color: "green" }} />;
@@ -117,6 +136,57 @@ const Project = () => {
       </Container>
       {data && (
         <Box mt={4}>
+          <Box
+            mb={2}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            {/* Dropdown for Compare With */}
+            <FormControl sx={{ mt: 2, width: "200px" }}>
+              {" "}
+              {/* Set width to make it smaller */}
+              <InputLabel id="compare-select-label">Compare With</InputLabel>
+              <Select
+                labelId="compare-select-label"
+                id="compare-select"
+                value={selectedComparePlatform}
+                label="Compare With"
+                onChange={(e) => setSelectedComparePlatform(e.target.value)}
+              >
+                <MenuItem value="amazon" disabled={platform === "amazon"}>
+                  Amazon
+                </MenuItem>
+                <MenuItem value="flipkart" disabled={platform === "flipkart"}>
+                  Flipkart
+                </MenuItem>
+                <MenuItem value="jiomart" disabled={platform === "jiomart"}>
+                  Jio Mart
+                </MenuItem>
+              </Select>
+            </FormControl>
+
+            {/* Button for Compare */}
+            <Box
+              sx={{
+                mt: 2,
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+              }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={!selectedComparePlatform}
+                onClick={() => handleCompare(name, selectedComparePlatform)}
+              >
+                Compare
+              </Button>
+            </Box>
+          </Box>
           <Box
             mb={2}
             sx={{
@@ -278,7 +348,7 @@ const Project = () => {
             display="flex"
             flexWrap="wrap"
             justifyContent="center"
-            gap={2} 
+            gap={2}
             maxWidth="80%"
           >
             {keywords.map((item, index) => {
@@ -305,6 +375,7 @@ const Project = () => {
                 </Paper>
               );
             })}
+            
           </Box>
         </Box>
       )}

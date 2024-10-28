@@ -2,6 +2,7 @@ from flask import Blueprint,request,jsonify,g
 from .services.scrapper import scrape
 from .services.sentiment import analyze
 from .services.summarize import summarize_reviews_in_chunks
+from .services.compare import compare
 import json
 import os
 from .auth.login import Login
@@ -66,9 +67,11 @@ def sentiment():
     url = data['url']
     return jsonify(analyze(url))
 
-@bp.route('/comparison')
+@bp.route('/compare',methods=['POST'])
 #@token_required
 def comparison():
-    return "comparison"
+    req = request.get_json()
+    data = compare(req['name'],req['platform'])
+    return jsonify({"compare":data}),200
 
 

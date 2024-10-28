@@ -27,6 +27,7 @@ def clean_text(text):
 def scrape(url):
     directory = 'temp_files'
 
+
     parsed_url = urlparse(url)
     domain = parsed_url.netloc
     platform = ""
