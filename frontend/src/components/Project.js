@@ -58,7 +58,7 @@ const Project = () => {
       setData(resData);
       setImgs(resData.url);
       setPlatform(resData.platform);
-      setName(resData.name);
+      setName(resData.title);
       console.log("Response from backend:", resData);
     } catch (error) {
       console.error("Error:", error);
@@ -90,7 +90,26 @@ const Project = () => {
     }
   };
 
-  const handleCompare = async () => {};
+  const handleCompare = async (e) => {
+    e.preventDefault();
+    try {
+      let response = await axios.post(
+        "http://localhost:5000/compare",
+        {
+          name: name,
+          platform: selectedComparePlatform,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setCompare(response.data.compare);
+    } catch (error) {
+      console.error("Error fetching summary:", error);
+    }
+  };
   const getIcon = (feedbackType) => {
     if (feedbackType === "POSITIVE")
       return <CheckCircleIcon style={{ color: "green" }} />;
@@ -144,10 +163,8 @@ const Project = () => {
               alignItems: "center",
             }}
           >
-            {/* Dropdown for Compare With */}
             <FormControl sx={{ mt: 2, width: "200px" }}>
               {" "}
-              {/* Set width to make it smaller */}
               <InputLabel id="compare-select-label">Compare With</InputLabel>
               <Select
                 labelId="compare-select-label"
@@ -167,8 +184,6 @@ const Project = () => {
                 </MenuItem>
               </Select>
             </FormControl>
-
-            {/* Button for Compare */}
             <Box
               sx={{
                 mt: 2,
@@ -181,7 +196,7 @@ const Project = () => {
                 variant="contained"
                 color="primary"
                 disabled={!selectedComparePlatform}
-                onClick={() => handleCompare(name, selectedComparePlatform)}
+                onClick={handleCompare}
               >
                 Compare
               </Button>
@@ -375,8 +390,28 @@ const Project = () => {
                 </Paper>
               );
             })}
-            
           </Box>
+        </Box>
+      )}
+      {compare && (
+        <Box
+          mt={4}
+          p={2}
+          sx={{
+            margin: "10px auto",
+            backgroundColor: "#f0f0f0",
+            borderRadius: "8px",
+            width: "80%",
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{ display: "flex", justifyContent: "center" }}
+            gutterBottom
+          >
+            Comparison of two Platforms
+          </Typography>
+          <Typography variant="body1" component="pre" style={{ whiteSpace: 'pre-wrap' }}>{compare}</Typography>
         </Box>
       )}
     </div>

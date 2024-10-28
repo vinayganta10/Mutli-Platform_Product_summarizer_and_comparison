@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def Gemini(text):
-    genai.configure(api_key=os.getenv('AIzaSyDazBTHytyaNeqXJRrhTB0L3s3BOi8N1_E'))
+    genai.configure(api_key='AIzaSyDazBTHytyaNeqXJRrhTB0L3s3BOi8N1_E')
 
     generation_config = {
     "temperature": 0.9,
@@ -25,5 +25,13 @@ def Gemini(text):
     )
 
     response = chat_session.send_message(text+"which is better based on price,warranty,delivery_Date,emi and rating and generate a percentage")
-
-    return response.text
+    
+    formatted_response = response.text.replace("Price:", "\nPrice:") \
+        .replace("Warranty:", "\nWarranty:") \
+        .replace("Delivery Date:", "\nDelivery Date:") \
+        .replace("EMI:", "\nEMI:") \
+        .replace("Rating:", "\nRating:") \
+        .replace("Percentage of Better Criteria:", "\n\nPercentage of Better Criteria:") \
+        .replace("Overall:", "\n\nOverall:")
+    
+    return formatted_response
