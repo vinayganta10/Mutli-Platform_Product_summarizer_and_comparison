@@ -123,6 +123,8 @@ def compare(name,platform):
         'warranty':data['warranty'],
         'platform':data['platform']
     }
+    print(product1)
+    print(product2)
     data = Gemini(str(product1)+str(product2))
     print(data)
     return data

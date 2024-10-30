@@ -104,7 +104,10 @@ def scrape(url):
         title = driver.find_element(By.CLASS_NAME,'VU-ZEz')
         price = driver.find_element(By.CLASS_NAME,'Nx9bqj.CxhGGd')
         rating = driver.find_element(By.CLASS_NAME,'XQDdHH')
-        emi_details = driver.find_element(By.CLASS_NAME,'g11wDd')
+        try:
+            emi_details= driver.find_element(By.CLASS_NAME, 'g11wDd')
+        except Exception:
+            emi_details=""
         delivery = driver.find_element(By.CLASS_NAME,'hVvnXm')
         warranty = driver.find_element(By.CLASS_NAME,'nX0P-8')
         img = driver.find_element(By.CLASS_NAME,'DByuf4.IZexXJ.jLEJ7H')
@@ -152,14 +155,20 @@ def scrape(url):
         price = prices[0]
         rating= driver.find_element(By.ID, "average").text.strip()
         warranty = 'N/A'
-        warranty = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//div[contains(text(), 'Warranty')]"))
-        ).text.strip()
+        # warranty = WebDriverWait(driver, 10).until(
+        #     EC.presence_of_element_located((By.XPATH, "//div[contains(text(), 'Warranty')]"))
+        # ).text.strip()
         delivery = 'N/A'
         delivery = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'product-delivery-to-between')]"))
         ).text.strip()
         emi_details='N/A'
+        # figure = WebDriverWait(driver, 10).until(
+        #     EC.presence_of_element_located((By.XPATH, "//figure[contains(@class, 'figure')]"))
+        # )
+        # img = driver.find_element(By.CLASS_NAME,'largeimage')
+        img = driver.find_elements(By.CLASS_NAME, "largeimage")
+        imgUrl = img[3].get_attribute('src')
         review_containers = driver.find_elements(By.CLASS_NAME, 'feedback-service-review-container')
         reviews = []
         for container in review_containers:
@@ -173,7 +182,8 @@ def scrape(url):
             'delivery_date': clean_text(delivery) if delivery else 'N/A',
             'emi_details': clean_text(emi_details),
             'warranty': clean_text(warranty) if warranty else 'N/A',
-            'platform' : platform
+            'platform' : platform,
+            'url':imgUrl,
             #'technical_details': technical_details
         }
 

@@ -73,18 +73,20 @@ const Project = () => {
         },
       });
       setSummary(response.data.summary);
-      const keywords = await axios.post(
-        "http://localhost:5000/sentiment",
-        {
-          url: url,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+      if (platform !== "jiomart") {
+        const keywords = await axios.post(
+          "http://localhost:5000/sentiment",
+          {
+            url: url,
           },
-        }
-      );
-      setKeywords(keywords.data);
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setKeywords(keywords.data);
+      }
     } catch (error) {
       console.error("Error fetching summary:", error);
     }
@@ -133,6 +135,8 @@ const Project = () => {
               setUrl("");
               setData(null);
               setSummary(null);
+              setKeywords(null);
+              setCompare(null);
             }}
           >
             Check Another Product
@@ -411,7 +415,13 @@ const Project = () => {
           >
             Comparison of two Platforms
           </Typography>
-          <Typography variant="body1" component="pre" style={{ whiteSpace: 'pre-wrap' }}>{compare}</Typography>
+          <Typography
+            variant="body1"
+            component="pre"
+            style={{ whiteSpace: "pre-wrap" }}
+          >
+            {<div dangerouslySetInnerHTML={{ __html: compare }} />}
+          </Typography>
         </Box>
       )}
     </div>
