@@ -23,6 +23,7 @@ import { ListItemIcon, ListItemText } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import './project.css';
 
 const Project = () => {
   const [url, setUrl] = useState();
@@ -34,13 +35,14 @@ const Project = () => {
   const [compare, setCompare] = useState(null);
   const [platform, setPlatform] = useState(null);
   const [name, setName] = useState(null);
+  const [loading,setLoading] = useState(null);
   const [selectedComparePlatform, setSelectedComparePlatform] = useState("");
 
   const token = localStorage.getItem("token");
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(token);
-
+    setLoading(true);
     try {
       const response = await axios.post(
         "http://localhost:5000/scrapper",
@@ -53,7 +55,7 @@ const Project = () => {
           },
         }
       );
-
+      setLoading(false);
       const resData = response.data;
       setData(resData);
       setImgs(resData.url);
@@ -66,6 +68,7 @@ const Project = () => {
   };
   const handleSummarize = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.get("http://localhost:5000/summarizer", {
         headers: {
@@ -87,6 +90,7 @@ const Project = () => {
         );
         setKeywords(keywords.data);
       }
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching summary:", error);
     }
@@ -94,6 +98,7 @@ const Project = () => {
 
   const handleCompare = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       let response = await axios.post(
         "http://localhost:5000/compare",
@@ -108,6 +113,7 @@ const Project = () => {
         }
       );
       setCompare(response.data.compare);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching summary:", error);
     }
@@ -157,6 +163,7 @@ const Project = () => {
           </form>
         </Box>
       </Container>
+      {loading && (<div className="loader"></div>)}
       {data && (
         <Box mt={4}>
           <Box

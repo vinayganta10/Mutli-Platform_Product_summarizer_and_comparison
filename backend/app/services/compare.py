@@ -22,7 +22,8 @@ chrome_options.add_argument("--window-size=1920x1080")
 
 def clean_text(text):
     cleaned_text= re.sub(r'[\u200e\u200f\u20b9]', '', text).strip()
-    return cleaned_text
+    clean_text = re.sub("Know More","",cleaned_text).strip()
+    return clean_text
 
 def compare(name,platform):
     headers = {
