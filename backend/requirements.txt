@@ -1,0 +1,37 @@
+# Web framework
+Flask==3.1.0
+
+# HTTP library
+requests==2.32.3
+
+# HTML parsing and web automation
+beautifulsoup4==4.12.3
+selenium==4.21.0
+
+# Model serialization
+safetensors==0.4.2
+
+# NLP and machine learning
+transformers==4.40.1
+
+# Google's generative AI
+google-generativeai==0.4.1
+
+# Environment variable management
+python-dotenv==1.0.1
+
+# JSON Web Tokens
+PyJWT==2.8.0
+
+# Cross-Origin Resource Sharing for Flask
+Flask-Cors==4.0.1
+
+# MongoDB driver
+pymongo==4.6.3
+
+# Deep learning frameworks
+torch==2.1.2
+torchvision==0.16.2
+torchaudio==2.1.2
+tensorflow==2.15.0
+flax==0.7.0
